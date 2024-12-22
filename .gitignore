@@ -1,0 +1,11 @@
+/Build*
+/build*
+/CMakeFiles*
+/CMakeCache.txt
+*/cpm_modules
+*/.DS_Store
+CMakeUserPresets.json
+Settings.json
+
+
+
