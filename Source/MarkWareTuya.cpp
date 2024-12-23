@@ -20,7 +20,7 @@ MarkWareTuya::MarkWareTuya()
     std::string deviceStatus;
 
     // Start to tal with Tuya API
-    if (tuyaApiWrapper.getAccessToken() == 0)
+    if (tuyaApiWrapper.getAccessTokenSimpleMode() == 0)
         if (tuyaApiWrapper.getDeviceStatus(deviceId, deviceStatus) == 0)
             std::cout << "Device status: " << deviceStatus << std::endl;
         else

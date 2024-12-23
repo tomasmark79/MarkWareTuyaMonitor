@@ -21,6 +21,16 @@ TuyaApiWrapper::TuyaApiWrapper()
 
 TuyaApiWrapper::~TuyaApiWrapper() {}
 
+// Příklad použití
+std::string TuyaApiWrapper::getDataCenterUrl(const std::string& dataCenterName) {
+    auto it = dataCenters.find(dataCenterName);
+    if (it != dataCenters.end()) {
+        return it->second;
+    } else {
+        return "Data center not found";
+    }
+}
+
 std::string TuyaApiWrapper::hmac_sha256(const std::string &key, const std::string &data)
 {
     unsigned char *digest;
@@ -92,7 +102,7 @@ int TuyaApiWrapper::getCredentials(std::string &clientId, std::string &clientSec
 
 /// @brief request access token
 /// @return 0 if success
-int TuyaApiWrapper::getAccessToken()
+int TuyaApiWrapper::getAccessTokenSimpleMode()
 {
     std::cout << std::endl << "--- Getting access token ..." << std::endl;
 
@@ -136,7 +146,7 @@ int TuyaApiWrapper::getAccessToken()
         headers.reset(curl_slist_append(headers.release(), ("sign: " + requestTokenSigned).c_str())
         );
 
-        curl_easy_setopt(curl, CURLOPT_URL, (baseUrl + urlPostfix).c_str());
+        curl_easy_setopt(curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers.get());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -160,6 +170,7 @@ int TuyaApiWrapper::getAccessToken()
         }
         this->accessToken = j["result"]["access_token"];
         this->refreshToken = j["result"]["refresh_token"];
+        this->expiredIn = j["result"]["expire_time"];
 
         if (DEBUG)
         {
@@ -228,7 +239,7 @@ int TuyaApiWrapper::getDeviceStatus(std::string &deviceIds, std::string &deviceS
         headers.reset(curl_slist_append(headers.release(), ("access_token: " + accessToken).c_str())
         );
 
-        curl_easy_setopt(curl, CURLOPT_URL, (baseUrl + urlPostfix).c_str());
+        curl_easy_setopt(curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str());
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers.get());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
