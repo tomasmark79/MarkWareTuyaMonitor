@@ -1,9 +1,12 @@
 #ifndef __TUYAAPIWRAPPER_H__
 #define __TUYAAPIWRAPPER_H__
 
+#include <ApiEndpoints.hpp>
+
 #include <curl/curl.h>
 #include <map>
 #include <string>
+
 class TuyaApiWrapper
 {
 
@@ -12,7 +15,8 @@ class TuyaApiWrapper
     ~TuyaApiWrapper();
 
     int getAccessTokenSimpleMode();
-    int getDeviceStatus(std::string &deviceIds, std::string &deviceStatus);
+    
+    int deviceControll(std::string &deviceIds, std::string &deviceControllResponse);
 
   private:
     std::map<std::string, std::string> dataCenters = {

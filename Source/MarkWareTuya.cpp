@@ -2,9 +2,15 @@
 #include <markwaretuya/version.h>
 
 #include <EmojiTools/EmojiTools.hpp>
+
 #include <TuyaApiWrapper.hpp>
 
 #include <iostream>
+
+MarkWareTuya::~MarkWareTuya()
+{
+    std::cout << "--- MarkWareTuya uninstantiated ---" << std::endl;
+}
 
 MarkWareTuya::MarkWareTuya()
 {
@@ -16,18 +22,19 @@ MarkWareTuya::MarkWareTuya()
     // Devices to reach comma separated
     std::string deviceId = "bfaef501e3f539ca8fvmou";
 
-    // Device status as a json
-    std::string deviceStatus;
+    // Start to talk with Tuya API
 
-    // Start to tal with Tuya API
-    if (tuyaApiWrapper.getAccessTokenSimpleMode() == 0)
-        if (tuyaApiWrapper.getDeviceStatus(deviceId, deviceStatus) == 0)
-            std::cout << "Device status: " << deviceStatus << std::endl;
-        else
-            std::cerr << "Error: Could not get device status" << std::endl;
-}
+    // Handshake
+    if (tuyaApiWrapper.getAccessTokenSimpleMode() == 1)
+    {
+        std::cerr << "Error: Could not get access token" << std::endl;
+        return;
+    }
 
-MarkWareTuya::~MarkWareTuya()
-{
-    std::cout << "--- MarkWareTuya uninstantiated ---" << std::endl;
+    // Go through the list of api endpoints
+    std::string deviceControllResponse;
+    if (tuyaApiWrapper.deviceControll(deviceId, deviceControllResponse) == 0)
+        // std::cout << "Device status: " << deviceControllResponse << std::endl;
+        ;
+    else std::cerr << "Error: Could not get device status" << std::endl;
 }

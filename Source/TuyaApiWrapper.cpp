@@ -10,7 +10,6 @@ using json = nlohmann::json;
 
 #define CREDENTIALS_FILE "/home/tomas/.tuya_credentials.txt"
 
-
 #define DEBUG bool(true)
 
 TuyaApiWrapper::TuyaApiWrapper()
@@ -22,11 +21,15 @@ TuyaApiWrapper::TuyaApiWrapper()
 TuyaApiWrapper::~TuyaApiWrapper() {}
 
 // Příklad použití
-std::string TuyaApiWrapper::getDataCenterUrl(const std::string& dataCenterName) {
+std::string TuyaApiWrapper::getDataCenterUrl(const std::string &dataCenterName)
+{
     auto it = dataCenters.find(dataCenterName);
-    if (it != dataCenters.end()) {
+    if (it != dataCenters.end())
+    {
         return it->second;
-    } else {
+    }
+    else
+    {
         return "Data center not found";
     }
 }
@@ -146,7 +149,9 @@ int TuyaApiWrapper::getAccessTokenSimpleMode()
         headers.reset(curl_slist_append(headers.release(), ("sign: " + requestTokenSigned).c_str())
         );
 
-        curl_easy_setopt(curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str());
+        curl_easy_setopt(
+            curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str()
+        );
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers.get());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -186,11 +191,7 @@ int TuyaApiWrapper::getAccessTokenSimpleMode()
     return 0;
 }
 
-/// @brief request device status
-/// @param deviceIds
-/// @return deviceStatus is a json
-/// @return 0 if success
-int TuyaApiWrapper::getDeviceStatus(std::string &deviceIds, std::string &deviceStatus)
+int TuyaApiWrapper::deviceControll(std::string &deviceIds, std::string &deviceControllResponse)
 {
     std::cout << std::endl << "--- Getting device status ..." << std::endl;
 
@@ -239,7 +240,9 @@ int TuyaApiWrapper::getDeviceStatus(std::string &deviceIds, std::string &deviceS
         headers.reset(curl_slist_append(headers.release(), ("access_token: " + accessToken).c_str())
         );
 
-        curl_easy_setopt(curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str());
+        curl_easy_setopt(
+            curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str()
+        );
         curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers.get());
         curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
         curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
@@ -249,6 +252,8 @@ int TuyaApiWrapper::getDeviceStatus(std::string &deviceIds, std::string &deviceS
 
         if (res != CURLE_OK)
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+
+        deviceControllResponse = this->readBuffer;
 
         if (DEBUG)
             std::cout << "getDeviceStatusResponse:\t" << this->readBuffer << std::endl;
