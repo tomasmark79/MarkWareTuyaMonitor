@@ -294,7 +294,7 @@ int TuyaApiWrapper::parseJsonResults(const std::string &json_buffer)
         }
         catch (const nlohmann::json::parse_error &e)
         {
-            std::cerr << "Chyba parsování JSON: " << e.what() << std::endl;
+            std::cerr << "Error parse JSON: " << e.what() << std::endl;
             break;
         }
     }
