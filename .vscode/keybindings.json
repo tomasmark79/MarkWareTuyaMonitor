@@ -6,14 +6,19 @@
     /* or in `~/.config/Code/${user}/keybindings.json`
     /* (c) Tomáš Mark 2024 */
     {
+        "key": "shift+f7",
+        "command": "workbench.action.tasks.runTask",
+        "args": "Build Native Debug"
+    },
+    {
         "key": "f7",
         "command": "workbench.action.tasks.runTask",
-        "args": "CMake Tasks"
+        "args": "MarkWare Tasks"
     },
     {
         "key": "ctrl+alt+c",
         "command": "workbench.action.tasks.runTask",
-        "args": "CMake Tasks"
+        "args": "MarkWare Tasks"
     },
     {
         "key": "ctrl+alt+m",
@@ -29,5 +34,5 @@
         "key": "ctrl+alt+l",
         "command": "workbench.action.tasks.runTask",
         "args": "lint"
-    }
+    },
 ]

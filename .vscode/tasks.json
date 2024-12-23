@@ -30,6 +30,26 @@
             ]
         },
         {
+            /* Build Native Debug */
+            "label": "Build Native Debug",
+            "type": "shell",
+            "command": "${workspaceFolder}/CMakeController.sh",
+            "args": [
+                "Build 🔨",
+                "Native",
+                "Debug"
+            ],
+            "group": {
+                "kind": "build",
+                "isDefault": false
+            },
+            "detail": "Build Native Debug",
+            "problemMatcher": [],
+            "dependsOn": [
+                "clear terminal"
+            ]
+        },
+        {
             /* LINT */
             "label": "lint",
             "type": "shell",
