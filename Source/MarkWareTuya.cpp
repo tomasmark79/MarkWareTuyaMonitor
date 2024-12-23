@@ -18,7 +18,7 @@ MarkWareTuya::MarkWareTuya()
 
     // Tuya API Wrapper by MarkWare (MIT License)
     TuyaApiWrapper tuyaApiWrapper;
-    
+
     std::string deviceIds = "bfaef501e3f539ca8fvmou";
     std::string deviceStatusResponse;
 

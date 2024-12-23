@@ -267,6 +267,41 @@ int TuyaApiWrapper::deviceControll(
     return 0;
 }
 
+/// @brief Will parse JSON results objects and print them to stdout
+/// @param json_buffer 
+/// @return 0 if success
+int TuyaApiWrapper::parseJsonResults(const std::string &json_buffer)
+{
+    size_t start = 0;
+
+    while (start < json_buffer.size()) // find all JSON blocks
+    {
+        try
+        {
+            size_t      end = json_buffer.find("}{", start);
+            std::string json_block = (end == std::string::npos)
+                ? json_buffer.substr(start) // last block
+                : json_buffer.substr(start, end - start + 1);
+
+            nlohmann::json json_obj = nlohmann::json::parse(json_block);
+
+            if (json_obj.contains("result"))
+            {
+                std::cout << json_obj["result"].dump(4) << std::endl; // pretty print
+            }
+
+            start = (end == std::string::npos) ? json_buffer.size() : end + 1;
+        }
+        catch (const nlohmann::json::parse_error &e)
+        {
+            std::cerr << "Chyba parsování JSON: " << e.what() << std::endl;
+            break;
+        }
+    }
+
+    return 0;
+}
+
 int TuyaApiWrapper::processAPIRequest(
     std::string  category,
     std::string  action,
@@ -351,7 +386,7 @@ int TuyaApiWrapper::processAPIRequest(
         processAPIRequestResponse = this->readBuffer;
 
         if (DEBUG)
-            std::cout << "getDeviceStatusResponse:\t" << this->readBuffer << std::endl;
+            parseJsonResults(this->readBuffer);
 
         curl_easy_cleanup(curl);
     }
@@ -360,3 +395,4 @@ int TuyaApiWrapper::processAPIRequest(
 
     return 0;
 }
+

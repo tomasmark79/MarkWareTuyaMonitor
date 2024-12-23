@@ -22,7 +22,7 @@ class ApiEndpoints
     using ApiCategory = std::map<std::string, std::vector<ApiOperation>>;
 
   public:
-    ApiCategory apiData;    
+    ApiCategory apiData;
 };
 
 #endif // __APIENDPOINTS_H__

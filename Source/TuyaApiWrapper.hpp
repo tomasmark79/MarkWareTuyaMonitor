@@ -19,13 +19,14 @@ class TuyaApiWrapper
     int getAccessTokenSimpleMode();
     int
     deviceControll(std::string &deviceIds, std::string action, std::string &deviceControllResponse);
-    
+
     int processAPIRequest(
         std::string  category,
         std::string  action,
         std::string &deviceIds,
         std::string &processAPIRequestResponse
     );
+    int parseJsonResults(const std::string &json_buffer);
 
   private:
     std::map<std::string, std::string> dataCenters = {
