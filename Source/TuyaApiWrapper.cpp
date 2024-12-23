@@ -268,7 +268,7 @@ int TuyaApiWrapper::deviceControll(
 }
 
 /// @brief Will parse JSON results objects and print them to stdout
-/// @param json_buffer 
+/// @param json_buffer
 /// @return 0 if success
 int TuyaApiWrapper::parseJsonResults(const std::string &json_buffer)
 {
@@ -395,4 +395,3 @@ int TuyaApiWrapper::processAPIRequest(
 
     return 0;
 }
-
