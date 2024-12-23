@@ -1,7 +1,6 @@
 #ifndef __MARKWARETUYA_H__
 #define __MARKWARETUYA_H__
 
-
 // Library declaration
 
 class MarkWareTuya

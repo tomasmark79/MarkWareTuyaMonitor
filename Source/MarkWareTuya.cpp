@@ -18,23 +18,23 @@ MarkWareTuya::MarkWareTuya()
 
     // Tuya API Wrapper by MarkWare (MIT License)
     TuyaApiWrapper tuyaApiWrapper;
-
-    // Devices to reach comma separated
-    std::string deviceId = "bfaef501e3f539ca8fvmou";
+    
+    std::string deviceIds = "bfaef501e3f539ca8fvmou";
+    std::string deviceStatusResponse;
 
     // Start to talk with Tuya API
 
-    // Handshake
     if (tuyaApiWrapper.getAccessTokenSimpleMode() == 1)
     {
         std::cerr << "Error: Could not get access token" << std::endl;
         return;
     }
 
-    // Go through the list of api endpoints
-    std::string deviceControllResponse;
-    if (tuyaApiWrapper.deviceControll(deviceId, deviceControllResponse) == 0)
-        // std::cout << "Device status: " << deviceControllResponse << std::endl;
-        ;
-    else std::cerr << "Error: Could not get device status" << std::endl;
+    if (tuyaApiWrapper.processAPIRequest(
+            "Device Control", "Get the status of a single device", deviceIds, deviceStatusResponse
+        ) == 1)
+    {
+        std::cerr << "Error: processAPIRequest" << std::endl;
+        return;
+    }
 }

@@ -14,9 +14,18 @@ class TuyaApiWrapper
     TuyaApiWrapper();
     ~TuyaApiWrapper();
 
+    ApiEndpoints apiEndpoints;
+
     int getAccessTokenSimpleMode();
+    int
+    deviceControll(std::string &deviceIds, std::string action, std::string &deviceControllResponse);
     
-    int deviceControll(std::string &deviceIds, std::string &deviceControllResponse);
+    int processAPIRequest(
+        std::string  category,
+        std::string  action,
+        std::string &deviceIds,
+        std::string &processAPIRequestResponse
+    );
 
   private:
     std::map<std::string, std::string> dataCenters = {
@@ -38,6 +47,7 @@ class TuyaApiWrapper
     static size_t WriteCallback(void *contents, size_t size, size_t nmemb, void *userp);
     int           getCredentials(std::string &clientId, std::string &clientSecret);
     std::string   getTimestamp();
+    int           replaceLiterals(std::string &str, const std::string &from, const std::string &to);
 
     CURL       *curl;
     CURLcode    res;

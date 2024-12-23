@@ -4,6 +4,7 @@
 #include <iostream>
 #include <map>
 #include <string>
+#include <vector>
 
 class ApiEndpoints
 {
@@ -11,28 +12,17 @@ class ApiEndpoints
     ApiEndpoints();
     ~ApiEndpoints();
 
-    void
-    addEndpoint(const std::string &domain, const std::string &action, const std::string &endpoint)
-    {
-        endpoints[domain][action] = endpoint;
-    }
-
-    std::string getEndpoint(const std::string &domain, const std::string &action) const
-    {
-        auto domainIt = endpoints.find(domain);
-        if (domainIt != endpoints.end())
-        {
-            auto actionIt = domainIt->second.find(action);
-            if (actionIt != domainIt->second.end())
-            {
-                return actionIt->second;
-            }
-        }
-        return "";
-    }
-
   private:
-    std::map<std::string, std::map<std::string, std::string>> endpoints;
+    struct ApiOperation
+    {
+        std::string name;
+        std::string url;
+    };
+
+    using ApiCategory = std::map<std::string, std::vector<ApiOperation>>;
+
+  public:
+    ApiCategory apiData;    
 };
 
 #endif // __APIENDPOINTS_H__

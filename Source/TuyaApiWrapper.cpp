@@ -20,7 +20,6 @@ TuyaApiWrapper::TuyaApiWrapper()
 
 TuyaApiWrapper::~TuyaApiWrapper() {}
 
-// Příklad použití
 std::string TuyaApiWrapper::getDataCenterUrl(const std::string &dataCenterName)
 {
     auto it = dataCenters.find(dataCenterName);
@@ -191,7 +190,9 @@ int TuyaApiWrapper::getAccessTokenSimpleMode()
     return 0;
 }
 
-int TuyaApiWrapper::deviceControll(std::string &deviceIds, std::string &deviceControllResponse)
+int TuyaApiWrapper::deviceControll(
+    std::string &deviceIds, std::string action, std::string &deviceControllResponse
+)
 {
     std::cout << std::endl << "--- Getting device status ..." << std::endl;
 
@@ -254,6 +255,100 @@ int TuyaApiWrapper::deviceControll(std::string &deviceIds, std::string &deviceCo
             std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
 
         deviceControllResponse = this->readBuffer;
+
+        if (DEBUG)
+            std::cout << "getDeviceStatusResponse:\t" << this->readBuffer << std::endl;
+
+        curl_easy_cleanup(curl);
+    }
+    curl_global_cleanup();
+    /* CURL END */
+
+    return 0;
+}
+
+int TuyaApiWrapper::processAPIRequest(
+    std::string  category,
+    std::string  action,
+    std::string &deviceIds,
+    std::string &processAPIRequestResponse
+)
+{
+    std::cout << std::endl << "--- processAPIRequest ..." << std::endl;
+
+    std::string urlPostfix = apiEndpoints.apiData[category].at(0).url;
+
+    // PLACEHOLDERS
+    size_t pos;
+
+    pos = urlPostfix.find("{device_id}");
+    if (pos != std::string::npos)
+        urlPostfix.replace(pos, std::string("{device_id}").length(), deviceIds);
+
+    pos = urlPostfix.find("{category}");
+    if (pos != std::string::npos)
+        urlPostfix.replace(pos, std::string("{category}").length(), "");
+
+    pos = urlPostfix.find("GET:");
+    if (pos != std::string::npos)
+        urlPostfix.replace(pos, std::string("GET:").length(), "");
+
+    // TIMESTAMP
+    const std::string timestamp = getTimestamp();
+
+    // STRING TO SIGN
+    const std::string stringToSign = "GET\n" + emptyBodyEncoded + "\n\n" + urlPostfix;
+    std::cout << "stringToSign:\t\t" << stringToSign << std::endl;
+
+    // NONCE OPTIONAL
+    const std::string nonceOptional = "";
+
+    // STR
+    const std::string str = clientId + accessToken + timestamp + nonceOptional + stringToSign;
+
+    // GET DEVICE STATUS SIGN
+    std::string requestGetDeviceSign = hmac_sha256(clientSecret, str);
+    std::transform(
+        requestGetDeviceSign.begin(),
+        requestGetDeviceSign.end(),
+        requestGetDeviceSign.begin(),
+        ::toupper
+    );
+    std::cout << "requestGetDeviceSign:\t" << requestGetDeviceSign << std::endl;
+
+    /* CURL */
+    curl_global_init(CURL_GLOBAL_DEFAULT);
+    curl = curl_easy_init();
+    if (curl)
+    {
+        std::unique_ptr<curl_slist, decltype(&curl_slist_free_all)> headers(
+            nullptr, &curl_slist_free_all
+        );
+        headers.reset(curl_slist_append(headers.release(), "sign_method: HMAC-SHA256"));
+        headers.reset(curl_slist_append(headers.release(), ("client_id: " + clientId).c_str()));
+        headers.reset(curl_slist_append(headers.release(), ("t: " + timestamp).c_str()));
+        headers.reset(curl_slist_append(headers.release(), "mode: cors"));
+        headers.reset(curl_slist_append(headers.release(), "Content-Type: application/json"));
+        headers.reset(
+            curl_slist_append(headers.release(), ("sign: " + requestGetDeviceSign).c_str())
+        );
+        headers.reset(curl_slist_append(headers.release(), ("access_token: " + accessToken).c_str())
+        );
+
+        curl_easy_setopt(
+            curl, CURLOPT_URL, (getDataCenterUrl("Central Europe Data Center") + urlPostfix).c_str()
+        );
+        curl_easy_setopt(curl, CURLOPT_HTTPHEADER, headers.get());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, WriteCallback);
+        curl_easy_setopt(curl, CURLOPT_WRITEDATA, &readBuffer);
+        // curl_easy_setopt(curl, CURLOPT_VERBOSE, 1L);
+
+        res = curl_easy_perform(curl); // Perform the request, res will get the return code
+
+        if (res != CURLE_OK)
+            std::cerr << "curl_easy_perform() failed: " << curl_easy_strerror(res) << std::endl;
+
+        processAPIRequestResponse = this->readBuffer;
 
         if (DEBUG)
             std::cout << "getDeviceStatusResponse:\t" << this->readBuffer << std::endl;
